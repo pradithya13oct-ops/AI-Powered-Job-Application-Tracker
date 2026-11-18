@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Job Application Tracker</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: #0f172a;
+            color: white;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            background: #111827;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #38bdf8;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+
+        .navbar a:hover {
+            color: #38bdf8;
+        }
+
+        .container {
+            padding: 40px 50px;
+        }
+
+        .welcome h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .welcome p {
+            color: #94a3b8;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-top: 35px;
+        }
+
+        .card {
+            background: #1e293b;
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid #334155;
+        }
+
+        .card h3 {
+            color: #94a3b8;
+            font-size: 16px;
+        }
+
+        .card h2 {
+            font-size: 30px;
+            margin-top: 15px;
+            color: #38bdf8;
+        }
+
+        .section {
+            margin-top: 40px;
+            background: #1e293b;
+            padding: 25px;
+            border-radius: 12px;
+            scroll-margin-top: 90px;
+        }
+
+        .section h2 {
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #0284c7;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            margin-top: 15px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #0369a1;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 13px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: white;
+            outline: none;
+            margin-top: 10px;
+        }
+
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #38bdf8;
+        }
+
+        input[type="file"] {
+            cursor: pointer;
+        }
+
+        .job-item {
+            background: #0f172a;
+            padding: 18px;
+            margin-top: 15px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+        }
+
+        .job-item h3 {
+            color: #38bdf8;
+            margin-bottom: 10px;
+        }
+
+        .job-item p {
+            margin-top: 7px;
+            color: #cbd5e1;
+        }
+
+        .delete-btn {
+            background: #dc2626;
+            color: white;
+            padding: 9px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 12px;
+        }
+
+        .empty {
+            color: #94a3b8;
+            margin-top: 15px;
+        }
+
+        .result-box {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 25px;
+        }
+
+        .match-score {
+            font-size: 42px;
+            font-weight: bold;
+            color: #38bdf8;
+            margin: 15px 0;
+        }
+
+        .skill-tag {
+            display: inline-block;
+            background: #164e63;
+            color: #bae6fd;
+            padding: 8px 12px;
+            margin: 5px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        .missing-tag {
+            background: #7f1d1d;
+            color: #fecaca;
+        }
+
+        .message {
+            margin-top: 15px;
+            color: #fbbf24;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #94a3b8;
+            margin-top: 40px;
+        }
+
+        @media(max-width: 768px) {
+            .navbar {
+                padding: 20px;
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .navbar a {
+                margin: 0 8px;
+            }
+
+            .cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .container {
+                padding: 25px;
+            }
+        }
+
+        @media(max-width: 480px) {
+            .cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="logo">💼 AI Job Tracker</div>
+
+        <div>
+            <a href="#dashboard">Dashboard</a>
+            <a href="#applications">Applications</a>
+            <a href="#ai-matcher">AI Matcher</a>
+            <a href="#analytics">Analytics</a>
+        </div>
+    </nav>
+
+    <div class="container" id="dashboard">
+
+        <div class="welcome">
+            <h1>Welcome to AI Job Tracker 🚀</h1>
+            <p>Manage your job applications and track your career growth.</p>
+        </div>
+
+        <div class="cards">
+            <div class="card">
+                <h3>Total Applications</h3>
+                <h2 id="total-count">0</h2>
+            </div>
+
+            <div class="card">
+                <h3>Applied Jobs</h3>
+                <h2 id="applied-count">0</h2>
+            </div>
+
+            <div class="card">
+                <h3>Interviews</h3>
+                <h2 id="interview-count">0</h2>
+            </div>
+
+            <div class="card">
+                <h3>Selected</h3>
+                <h2 id="selected-count">0</h2>
+            </div>
+        </div>
+
+        <!-- Job Applications -->
+        <div class="section" id="applications">
+            <h2>💼 Job Applications</h2>
+            <p>Enter your job application details below.</p>
+
+            <form id="jobForm">
+                <input type="text" id="company" placeholder="Company Name" required>
+                <input type="text" id="role" placeholder="Job Role" required>
+                <input type="text" id="location" placeholder="Job Location" required>
+
+                <select id="status">
+                    <option value="Applied">Applied</option>
+                    <option value="Interview">Interview</option>
+                    <option value="Selected">Selected</option>
+                    <option value="Rejected">Rejected</option>
+                </select>
+
+                <button type="submit" class="btn">+ Add Job</button>
+            </form>
+
+            <h2 style="margin-top:30px;">My Applications</h2>
+            <div id="jobList">
+                <p class="empty">No job applications added yet.</p>
+            </div>
+        </div>
+
+        <!-- AI Resume Matcher -->
+        <div class="section" id="ai-matcher">
+            <h2>🤖 AI Resume Matcher</h2>
+
+            <p>
+                Upload your resume and paste a job description
+                to calculate your skill match percentage.
+            </p>
+
+            <form id="matcherForm">
+
+                <label for="resume" style="display:block;margin-top:20px;">
+                    <strong>1. Upload Your Resume (PDF)</strong>
+                </label>
+
+                <input type="file" id="resume" accept=".pdf,application/pdf" required>
+
+                <label for="jobDescription" style="display:block;margin-top:20px;">
+                    <strong>2. Paste Job Description</strong>
+                </label>
+
+                <textarea id="jobDescription" placeholder="Paste the complete job description here..."
+                    required></textarea>
+
+                <button type="submit" class="btn" id="analyzeBtn">
+                    🤖 Analyze Resume
+                </button>
+
+            </form>
+
+            <p id="matcherMessage" class="message"></p>
+
+            <div id="matcherResults" class="result-box" hidden>
+
+                <h2>📊 Resume Analysis Result</h2>
+
+                <p>Overall Match Percentage</p>
+                <div class="match-score" id="matchScore">0%</div>
+
+                <p id="recommendation"></p>
+
+                <h3 style="margin-top:25px;">✅ Matched Skills</h3>
+                <div id="matchedSkills"></div>
+
+                <h3 style="margin-top:25px;">❌ Missing Skills</h3>
+                <div id="missingSkills"></div>
+
+                <h3 style="margin-top:25px;">📌 Resume Skills</h3>
+                <div id="resumeSkills"></div>
+
+                <h3 style="margin-top:25px;">🎯 Required Job Skills</h3>
+                <div id="jobSkills"></div>
+
+            </div>
+        </div>
+
+        <!-- Analytics -->
+        <div class="section" id="analytics">
+            <h2>📊 Career Analytics</h2>
+            <p>Track your application progress and job search performance.</p>
+            <button class="btn" onclick="showAnalytics()">View Analytics</button>
+            <p id="analyticsMessage" class="message"></p>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>© 2026 AI-Powered Job Application Tracker. Built with Python.</p>
+    </footer>
+
+    <script>
+
+        let jobs = [];
+
+        const jobForm = document.getElementById("jobForm");
+        const jobList = document.getElementById("jobList");
+
+        // Add Job
+        jobForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            const job = {
+                company: document.getElementById("company").value.trim(),
+                role: document.getElementById("role").value.trim(),
+                location: document.getElementById("location").value.trim(),
+                status: document.getElementById("status").value
+            };
+
+            if (!job.company || !job.role || !job.location) {
+                alert("Please fill all fields!");
+                return;
+            }
+
+            jobs.push(job);
+            displayJobs();
+            updateDashboard();
+            jobForm.reset();
+
+            alert("Job Application Added Successfully!");
+        });
+
+        // Display Jobs
+        function displayJobs() {
+            jobList.innerHTML = "";
+
+            if (jobs.length === 0) {
+                jobList.innerHTML =
+                    '<p class="empty">No job applications added yet.</p>';
+                return;
+            }
+
+            jobs.forEach(function (job, index) {
+                const div = document.createElement("div");
+                div.className = "job-item";
+
+                const title = document.createElement("h3");
+                title.textContent = job.company;
+
+                const role = document.createElement("p");
+                role.textContent = "Role: " + job.role;
+
+                const location = document.createElement("p");
+                location.textContent = "Location: " + job.location;
+
+                const status = document.createElement("p");
+                status.textContent = "Status: " + job.status;
+
+                const deleteButton = document.createElement("button");
+                deleteButton.className = "delete-btn";
+                deleteButton.textContent = "Delete";
+
+                deleteButton.addEventListener("click", function () {
+                    deleteJob(index);
+                });
+
+                div.append(title, role, location, status, deleteButton);
+                jobList.appendChild(div);
+            });
+        }
+
+        // Delete Job
+        function deleteJob(index) {
+            if (confirm("Are you sure you want to delete this job?")) {
+                jobs.splice(index, 1);
+                displayJobs();
+                updateDashboard();
+            }
+        }
+
+        // Dashboard Statistics
+        function updateDashboard() {
+            document.getElementById("total-count").textContent = jobs.length;
+
+            document.getElementById("applied-count").textContent =
+                jobs.filter(job => job.status === "Applied").length;
+
+            document.getElementById("interview-count").textContent =
+                jobs.filter(job => job.status === "Interview").length;
+
+            document.getElementById("selected-count").textContent =
+                jobs.filter(job => job.status === "Selected").length;
+        }
+
+        // AI Resume Matcher
+        const matcherForm = document.getElementById("matcherForm");
+
+        matcherForm.addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const resumeFile = document.getElementById("resume").files[0];
+            const jobDescription =
+                document.getElementById("jobDescription").value.trim();
+
+            const message = document.getElementById("matcherMessage");
+            const results = document.getElementById("matcherResults");
+            const button = document.getElementById("analyzeBtn");
+
+            results.hidden = true;
+            message.textContent = "";
+
+            if (!resumeFile) {
+                message.textContent = "Please upload your PDF resume.";
+                return;
+            }
+
+            if (!resumeFile.name.toLowerCase().endsWith(".pdf")) {
+                message.textContent = "Only PDF resumes are supported.";
+                return;
+            }
+
+            if (!jobDescription) {
+                message.textContent = "Please enter a job description.";
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("resume", resumeFile);
+            formData.append("job_description", jobDescription);
+
+            button.disabled = true;
+            button.textContent = "Analyzing...";
+            message.textContent = "Please wait. Analyzing your resume...";
+
+            try {
+                const response = await fetch("/api/analyze", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.detail || "Resume analysis failed.");
+                }
+
+                document.getElementById("matchScore").textContent =
+                    data.match_percentage + "%";
+
+                document.getElementById("recommendation").textContent =
+                    "Recommendation: " + data.recommendation;
+
+                displaySkills("matchedSkills", data.matched_skills);
+                displaySkills("missingSkills", data.missing_skills);
+                displaySkills("resumeSkills", data.resume_skills);
+                displaySkills("jobSkills", data.job_skills);
+
+                results.hidden = false;
+                message.textContent = "Resume analysis completed successfully!";
+
+            } catch (error) {
+                message.textContent = "Error: " + error.message;
+            } finally {
+                button.disabled = false;
+                button.textContent = "🤖 Analyze Resume";
+            }
+        });
+
+        // Display skill tags
+        function displaySkills(elementId, skills) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = "";
+
+            if (!skills || skills.length === 0) {
+                element.textContent = "No skills found.";
+                return;
+            }
+
+            skills.forEach(function (skill) {
+                const span = document.createElement("span");
+                span.className = "skill-tag";
+
+                if (elementId === "missingSkills") {
+                    span.classList.add("missing-tag");
+                }
+
+                span.textContent = skill;
+                element.appendChild(span);
+            });
+        }
+
+        // Analytics placeholder
+        // function showAnalytics() {
+        //     document.getElementById("analyticsMessage").textContent =
+        //         "Detailed analytics will be developed in the next phase.";
+        // }
+        // Career Analytics
+        function showAnalytics() {
+
+            const total = jobs.length;
+
+            const applied = jobs.filter(
+                job => job.status === "Applied"
+            ).length;
+
+            const interview = jobs.filter(
+                job => job.status === "Interview"
+            ).length;
+
+            const selected = jobs.filter(
+                job => job.status === "Selected"
+            ).length;
+
+            const rejected = jobs.filter(
+                job => job.status === "Rejected"
+            ).length;
+
+            const successRate = total > 0
+                ? ((selected / total) * 100).toFixed(1)
+                : 0;
+
+            document.getElementById("analyticsMessage").innerHTML = `
+        <div class="result-box">
+
+            <h2>📊 Career Analytics Dashboard</h2>
+
+            <p>Total Applications: ${total}</p>
+            <p>Applied Jobs: ${applied}</p>
+            <p>Interviews: ${interview}</p>
+            <p>Selected: ${selected}</p>
+            <p>Rejected: ${rejected}</p>
+
+            <h3 style="margin-top:20px;">
+                Interview Selection Rate
+            </h3>
+
+            <h2 style="color:#38bdf8;">
+                ${successRate}%
+            </h2>
+
+        </div>
+    `;
+        }
+    </script>
+
+</body>
+
+</html>
